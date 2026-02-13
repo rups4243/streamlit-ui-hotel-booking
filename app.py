@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # Get config from environment variables
 agent_id = os.environ.get("BEDROCK_AGENT_ID")
 agent_alias_id = os.environ.get("BEDROCK_AGENT_ALIAS_ID", "TSTALIASID")  # TSTALIASID is the default test alias ID
-ui_title = os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "Welcome to Hotel Booking Agent")
+ui_title = os.environ.get("BEDROCK_AGENT_TEST_UI_TITLE", "ANBC Bank, Enterprise Travel Planner")
 ui_icon = os.environ.get("BEDROCK_AGENT_TEST_UI_ICON")
 
 
@@ -35,6 +35,88 @@ def init_session_state():
     st.session_state.citations = []
     st.session_state.trace = {}
 
+
+# Setting CSS
+
+def apply_custom_css():
+    st.markdown(
+        """
+        <style>
+        /* 1. Background and Global Text */
+        .stApp {
+            background-color: #000000;
+            color: #35B8FF;
+        }
+
+        /* 2. Typography & Font Sizes */
+        html, body, [class*="css"] {
+            font-size: 12px;
+            line-height: 1.6; /* Readable line height */
+        }
+
+        p {
+            color: #FFFFFF; /* Primary Blue */
+            /*font-size: 2.5rem !important;
+            padding-bottom: 0.5rem; */
+        }
+
+        li {
+            color: darkgray;
+        }
+
+        /* 3. Headers (Clear Hierarchies) */
+        h1 {
+            color: #35B8FF; /* Primary Blue */
+            font-size: 2.5rem !important;
+            padding-bottom: 0.5rem;
+        }
+        h2 {
+            color: #35B8FF;
+            font-size: 2rem !important;
+            border-bottom: 1px solid #333333; /* Dark gray contrast */
+            padding-bottom: 0.3rem;
+        }
+        h3 {
+            color: #FFFFFF;
+            font-size: 1.5rem !important;
+            font-weight: 600;
+        }
+
+        /* 4. Secondary Elements (Dark Grays for Contrast) */
+        [data-testid="stSidebar"] {
+            background-color: #121212; /* Dark gray sidebar */
+            border-right: 1px solid #333333;
+        }
+        
+        /* Secondary background for widgets/cards */
+        .stButton>button, .stTextInput>div>div {
+            background-color: #1E1E1E !important;
+            color: white !important;
+            border: 1px solid #35B8FF !important; /* Blue accent border */
+        }
+
+        /* 5. Consistent Spacing */
+        .block-container {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+            gap: 2rem;
+        }
+
+        /* Hide the top header bar entirely */
+        header[data-testid="stHeader"] {
+        display: none !important;
+        }
+
+        /* Hide the top header bar entirely */
+        header[data-testid="stBottom "] {
+        background-color: black !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+apply_custom_css()
 
 # General page configuration and initialization
 st.set_page_config(page_title=ui_title, page_icon=ui_icon, layout="wide")
@@ -109,66 +191,66 @@ trace_info_types_map = {
     "postProcessingTrace": ["modelInvocationInput", "modelInvocationOutput", "observation"]
 }
 
-# Sidebar section for trace
-with st.sidebar:
-    st.title("Trace")
+# # Sidebar section for trace
+# with st.sidebar:
+#     st.title("Trace")
 
-    # Show each trace type in separate sections
-    step_num = 1
-    for trace_type_header in trace_types_map:
-        st.subheader(trace_type_header)
+#     # Show each trace type in separate sections
+#     step_num = 1
+#     for trace_type_header in trace_types_map:
+#         st.subheader(trace_type_header)
 
-        # Organize traces by step similar to how it is shown in the Bedrock console
-        has_trace = False
-        for trace_type in trace_types_map[trace_type_header]:
-            if trace_type in st.session_state.trace:
-                has_trace = True
-                trace_steps = {}
+#         # Organize traces by step similar to how it is shown in the Bedrock console
+#         has_trace = False
+#         for trace_type in trace_types_map[trace_type_header]:
+#             if trace_type in st.session_state.trace:
+#                 has_trace = True
+#                 trace_steps = {}
 
-                for trace in st.session_state.trace[trace_type]:
-                    # Each trace type and step may have different information for the end-to-end flow
-                    if trace_type in trace_info_types_map:
-                        trace_info_types = trace_info_types_map[trace_type]
-                        for trace_info_type in trace_info_types:
-                            if trace_info_type in trace:
-                                trace_id = trace[trace_info_type]["traceId"]
-                                if trace_id not in trace_steps:
-                                    trace_steps[trace_id] = [trace]
-                                else:
-                                    trace_steps[trace_id].append(trace)
-                                break
-                    else:
-                        trace_id = trace["traceId"]
-                        trace_steps[trace_id] = [
-                            {
-                                trace_type: trace
-                            }
-                        ]
+#                 for trace in st.session_state.trace[trace_type]:
+#                     # Each trace type and step may have different information for the end-to-end flow
+#                     if trace_type in trace_info_types_map:
+#                         trace_info_types = trace_info_types_map[trace_type]
+#                         for trace_info_type in trace_info_types:
+#                             if trace_info_type in trace:
+#                                 trace_id = trace[trace_info_type]["traceId"]
+#                                 if trace_id not in trace_steps:
+#                                     trace_steps[trace_id] = [trace]
+#                                 else:
+#                                     trace_steps[trace_id].append(trace)
+#                                 break
+#                     else:
+#                         trace_id = trace["traceId"]
+#                         trace_steps[trace_id] = [
+#                             {
+#                                 trace_type: trace
+#                             }
+#                         ]
 
-                # Show trace steps in JSON similar to the Bedrock console
-                for trace_id in trace_steps.keys():
-                    with st.expander(f"Trace Step {str(step_num)}", expanded=False):
-                        for trace in trace_steps[trace_id]:
-                            trace_str = json.dumps(trace, indent=2)
-                            st.code(trace_str, language="json", line_numbers=True, wrap_lines=True)
-                    step_num += 1
-        if not has_trace:
-            st.text("None")
+#                 # Show trace steps in JSON similar to the Bedrock console
+#                 for trace_id in trace_steps.keys():
+#                     with st.expander(f"Trace Step {str(step_num)}", expanded=False):
+#                         for trace in trace_steps[trace_id]:
+#                             trace_str = json.dumps(trace, indent=2)
+#                             st.code(trace_str, language="json", line_numbers=True, wrap_lines=True)
+#                     step_num += 1
+#         if not has_trace:
+#             st.text("None")
 
-    st.subheader("Citations")
-    if len(st.session_state.citations) > 0:
-        citation_num = 1
-        for citation in st.session_state.citations:
-            for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
-                with st.expander(f"Citation [{str(citation_num)}]", expanded=False):
-                    citation_str = json.dumps(
-                        {
-                            "generatedResponsePart": citation["generatedResponsePart"],
-                            "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
-                        },
-                        indent=2
-                    )
-                    st.code(citation_str, language="json", line_numbers=True, wrap_lines=True)
-                citation_num = citation_num + 1
-    else:
-        st.text("None")
+#     st.subheader("Citations")
+#     if len(st.session_state.citations) > 0:
+#         citation_num = 1
+#         for citation in st.session_state.citations:
+#             for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
+#                 with st.expander(f"Citation [{str(citation_num)}]", expanded=False):
+#                     citation_str = json.dumps(
+#                         {
+#                             "generatedResponsePart": citation["generatedResponsePart"],
+#                             "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
+#                         },
+#                         indent=2
+#                     )
+#                     st.code(citation_str, language="json", line_numbers=True, wrap_lines=True)
+#                 citation_num = citation_num + 1
+#     else:
+#         st.text("None")
