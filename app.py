@@ -111,6 +111,22 @@ def apply_custom_css():
         header[data-testid="stBottom "] {
         background-color: black !important;
         }
+
+        /* 5. Hide Streamlit Branding & Manage App Button */
+        header[data-testid="stHeader"], 
+        .stAppDeployButton, 
+        #MainMenu, 
+        footer {
+            display: none !important;
+            visibility: hidden;
+        }
+
+        /* 6. Make Bottom/Footer Area Black */
+        [data-testid="stBottom"] {
+            background-color: #000000 !important;
+        }
+
+
         </style>
         """,
         unsafe_allow_html=True
@@ -121,6 +137,27 @@ apply_custom_css()
 # General page configuration and initialization
 st.set_page_config(page_title=ui_title, page_icon=ui_icon, layout="wide")
 st.title(ui_title)
+
+st.markdown(
+    """
+    <div style="
+        color: darkgray; 
+        font-size: 14px; 
+        margin-top: -20px; 
+        margin-bottom: 25px; 
+        padding-top: 5px;
+        opacity: 0.8;
+    ">
+        Welcome to your ANBC Enterprise Travel Suite. 
+        As our strategic hoteling partner, 
+        Hilton Hotels & Resorts offers concierge services to all ANBC employees. 
+        Your Holiday experience is seamlessly managed and secured through this AI Assistant.
+        Currently we are offering stays in Goa, India only.
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
 if len(st.session_state.items()) == 0:
     init_session_state()
 
