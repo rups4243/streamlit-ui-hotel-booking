@@ -12,7 +12,7 @@ def invoke_agent(agent_id, agent_alias_id, session_id, prompt):
         response = client.invoke_agent(
             agentId='EBIHAK7OTX',
             agentAliasId='KCGWYGWXEU',
-            enableTrace=False,
+            enableTrace=True,
             sessionId=session_id,
             inputText=prompt
         )

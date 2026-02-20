@@ -125,7 +125,10 @@ def apply_custom_css():
         [data-testid="stBottom"] {
             background-color: #000000 !important;
         }
-
+        
+        [data-testid="manage-app-button"] {
+            background-color: #000000 !important;
+        }
 
         </style>
         """,
@@ -228,66 +231,66 @@ trace_info_types_map = {
     "postProcessingTrace": ["modelInvocationInput", "modelInvocationOutput", "observation"]
 }
 
-# # Sidebar section for trace
-# with st.sidebar:
-#     st.title("Trace")
+# Sidebar section for trace
+with st.sidebar:
+    st.title("Trace")
 
-#     # Show each trace type in separate sections
-#     step_num = 1
-#     for trace_type_header in trace_types_map:
-#         st.subheader(trace_type_header)
+    # Show each trace type in separate sections
+    step_num = 1
+    for trace_type_header in trace_types_map:
+        st.subheader(trace_type_header)
 
-#         # Organize traces by step similar to how it is shown in the Bedrock console
-#         has_trace = False
-#         for trace_type in trace_types_map[trace_type_header]:
-#             if trace_type in st.session_state.trace:
-#                 has_trace = True
-#                 trace_steps = {}
+        # Organize traces by step similar to how it is shown in the Bedrock console
+        has_trace = False
+        for trace_type in trace_types_map[trace_type_header]:
+            if trace_type in st.session_state.trace:
+                has_trace = True
+                trace_steps = {}
 
-#                 for trace in st.session_state.trace[trace_type]:
-#                     # Each trace type and step may have different information for the end-to-end flow
-#                     if trace_type in trace_info_types_map:
-#                         trace_info_types = trace_info_types_map[trace_type]
-#                         for trace_info_type in trace_info_types:
-#                             if trace_info_type in trace:
-#                                 trace_id = trace[trace_info_type]["traceId"]
-#                                 if trace_id not in trace_steps:
-#                                     trace_steps[trace_id] = [trace]
-#                                 else:
-#                                     trace_steps[trace_id].append(trace)
-#                                 break
-#                     else:
-#                         trace_id = trace["traceId"]
-#                         trace_steps[trace_id] = [
-#                             {
-#                                 trace_type: trace
-#                             }
-#                         ]
+                for trace in st.session_state.trace[trace_type]:
+                    # Each trace type and step may have different information for the end-to-end flow
+                    if trace_type in trace_info_types_map:
+                        trace_info_types = trace_info_types_map[trace_type]
+                        for trace_info_type in trace_info_types:
+                            if trace_info_type in trace:
+                                trace_id = trace[trace_info_type]["traceId"]
+                                if trace_id not in trace_steps:
+                                    trace_steps[trace_id] = [trace]
+                                else:
+                                    trace_steps[trace_id].append(trace)
+                                break
+                    else:
+                        trace_id = trace["traceId"]
+                        trace_steps[trace_id] = [
+                            {
+                                trace_type: trace
+                            }
+                        ]
 
-#                 # Show trace steps in JSON similar to the Bedrock console
-#                 for trace_id in trace_steps.keys():
-#                     with st.expander(f"Trace Step {str(step_num)}", expanded=False):
-#                         for trace in trace_steps[trace_id]:
-#                             trace_str = json.dumps(trace, indent=2)
-#                             st.code(trace_str, language="json", line_numbers=True, wrap_lines=True)
-#                     step_num += 1
-#         if not has_trace:
-#             st.text("None")
+                # Show trace steps in JSON similar to the Bedrock console
+                for trace_id in trace_steps.keys():
+                    with st.expander(f"Trace Step {str(step_num)}", expanded=False):
+                        for trace in trace_steps[trace_id]:
+                            trace_str = json.dumps(trace, indent=2)
+                            st.code(trace_str, language="json", line_numbers=True, wrap_lines=True)
+                    step_num += 1
+        if not has_trace:
+            st.text("None")
 
-#     st.subheader("Citations")
-#     if len(st.session_state.citations) > 0:
-#         citation_num = 1
-#         for citation in st.session_state.citations:
-#             for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
-#                 with st.expander(f"Citation [{str(citation_num)}]", expanded=False):
-#                     citation_str = json.dumps(
-#                         {
-#                             "generatedResponsePart": citation["generatedResponsePart"],
-#                             "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
-#                         },
-#                         indent=2
-#                     )
-#                     st.code(citation_str, language="json", line_numbers=True, wrap_lines=True)
-#                 citation_num = citation_num + 1
-#     else:
-#         st.text("None")
+    st.subheader("Citations")
+    if len(st.session_state.citations) > 0:
+        citation_num = 1
+        for citation in st.session_state.citations:
+            for retrieved_ref_num, retrieved_ref in enumerate(citation["retrievedReferences"]):
+                with st.expander(f"Citation [{str(citation_num)}]", expanded=False):
+                    citation_str = json.dumps(
+                        {
+                            "generatedResponsePart": citation["generatedResponsePart"],
+                            "retrievedReference": citation["retrievedReferences"][retrieved_ref_num]
+                        },
+                        indent=2
+                    )
+                    st.code(citation_str, language="json", line_numbers=True, wrap_lines=True)
+                citation_num = citation_num + 1
+    else:
+        st.text("None")
